@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
+import { API_BASE_URL } from '../config'
 import { Link } from 'react-router-dom'
 import { Folder, Send, MessageSquare, AlertCircle, RefreshCw, Trash2, ArrowRight } from 'lucide-react'
 import PageGlow from '../components/PageGlow'
@@ -23,7 +24,7 @@ const ComparePage = () => {
     useEffect(() => {
         const fetchRepos = async () => {
             try {
-                const res = await fetch('/api/repos')
+                const res = await fetch(`${API_BASE_URL}/api/repos`)
                 if (res.ok) {
                     const data = await res.json()
                     setRepos(data)
@@ -79,7 +80,7 @@ const ComparePage = () => {
             setLoading(true)
             try {
                 const cleanHistory = history.map(m => ({ role: m.role, content: m.content }))
-                const res = await fetch('/api/chat/', {
+                const res = await fetch(`${API_BASE_URL}/api/chat/`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { API_BASE_URL } from '../config'
 import { Link } from 'react-router-dom'
 import { Search, Loader2, ArrowRight, CornerDownRight } from 'lucide-react'
 import PageGlow from '../components/PageGlow'
@@ -30,7 +31,7 @@ const ExplorerPage = () => {
     useEffect(() => {
         const fetchRepos = async () => {
             try {
-                const res = await fetch('/api/repos')
+                const res = await fetch(`${API_BASE_URL}/api/repos`)
                 if (res.ok) {
                     const data = await res.json()
                     setRepos(data)
@@ -53,7 +54,7 @@ const ExplorerPage = () => {
         const fetchChunks = async () => {
             setLoadingChunks(true)
             try {
-                const res = await fetch(`/api/repos/${encodeURIComponent(selectedRepo)}/chunks?paginate=false`)
+                const res = await fetch(`${API_BASE_URL}/api/repos/${encodeURIComponent(selectedRepo)}/chunks?paginate=false`)
                 if (res.ok) {
                     const data = await res.json()
                     setAllChunks(data.chunks || [])

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { API_BASE_URL } from '../config'
 import { useApp } from '../context/AppContext'
 import { Trash2, AlertOctagon, Loader2, Copy, RefreshCw, Check } from 'lucide-react'
 import PageGlow from '../components/PageGlow'
@@ -23,11 +24,11 @@ const SettingsPage = () => {
     useEffect(() => {
         setLoading(true)
         Promise.all([
-            fetch('/api/repos').then(r => {
+            fetch(`${API_BASE_URL}/api/repos`).then(r => {
                 if (!r.ok) throw new Error("Failed fetching repository metadata.")
                 return r.json()
             }),
-            fetch('/api/stats').then(r => {
+            fetch(`${API_BASE_URL}/api/stats`).then(r => {
                 if (!r.ok) throw new Error("Failed fetching database statistics.")
                 return r.json()
             })
@@ -41,7 +42,7 @@ const SettingsPage = () => {
                 const breakdowns = {}
                 for (const repo of reposData) {
                     try {
-                        const res = await fetch(`/api/repos/${encodeURIComponent(repo.repo_url)}/chunks?paginate=false`)
+                        const res = await fetch(`${API_BASE_URL}/api/repos/${encodeURIComponent(repo.repo_url)}/chunks?paginate=false`)
                         if (res.ok) {
                             const data = await res.json()
                             const chunks = data.chunks || []
@@ -83,7 +84,7 @@ const SettingsPage = () => {
             if (success) {
                 setReposMetadata(prev => prev.filter(r => r.repo_url !== url))
                 // Re-fetch stats to sync vector count
-                const statsRes = await fetch('/api/stats')
+                const statsRes = await fetch(`${API_BASE_URL}/api/stats`)
                 if (statsRes.ok) {
                     const statsData = await statsRes.json()
                     setStats(statsData)
@@ -103,7 +104,7 @@ const SettingsPage = () => {
         setReindexProgress(0)
         try {
             // 1. DELETE
-            const delRes = await fetch(`/api/repos/${encodeURIComponent(repoUrl)}`, {
+            const delRes = await fetch(`${API_BASE_URL}/api/repos/${encodeURIComponent(repoUrl)}`, {
                 method: 'DELETE'
             })
             if (!delRes.ok) {
@@ -111,7 +112,7 @@ const SettingsPage = () => {
             }
 
             // 2. INGEST POST
-            const ingestRes = await fetch('/api/ingest/', {
+            const ingestRes = await fetch(`${API_BASE_URL}/api/ingest/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

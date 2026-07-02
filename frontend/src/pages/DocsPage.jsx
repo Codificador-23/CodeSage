@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { API_BASE_URL } from '../config'
 import { CheckCircle, AlertTriangle, Play, Loader2 } from 'lucide-react'
 import PageGlow from '../components/PageGlow'
 
@@ -17,8 +18,8 @@ const DocsPage = () => {
             const startTime = performance.now()
             try {
                 const [healthRes, statsRes] = await Promise.all([
-                    fetch('/api/health'),
-                    fetch('/api/stats')
+                    fetch(`${API_BASE_URL}/api/health`),
+                    fetch(`${API_BASE_URL}/api/stats`)
                 ])
                 const endTime = performance.now()
                 const timeTaken = Math.round(endTime - startTime)
@@ -57,7 +58,7 @@ const DocsPage = () => {
         setPinging(true)
         const startTime = performance.now()
         try {
-            const res = await fetch('/api/health')
+            const res = await fetch(`${API_BASE_URL}/api/health`)
             const duration = Math.round(performance.now() - startTime)
             if (res.ok) {
                 const data = await res.json()

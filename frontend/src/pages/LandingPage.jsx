@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { API_BASE_URL } from '../config'
 import { Link } from 'react-router-dom'
 import { ArrowRight, Github, Code, RefreshCw, Eye, Sparkles, Database } from 'lucide-react'
 import PageGlow from '../components/PageGlow'
@@ -11,8 +12,8 @@ const LandingPage = () => {
 
     useEffect(() => {
         Promise.all([
-            fetch('/api/repos').then(r => r.json()),
-            fetch('/api/stats').then(r => r.json())
+            fetch(`${API_BASE_URL}/api/repos`).then(r => r.json()),
+            fetch(`${API_BASE_URL}/api/stats`).then(r => r.json())
         ]).then(([repos, stats]) => {
             setLiveStats({
                 repos: repos.length,

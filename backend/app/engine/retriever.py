@@ -1,4 +1,7 @@
 import os
+os.environ["CUDA_VISIBLE_DEVICES"] = ""
+os.environ["OMP_NUM_THREADS"] = "1"
+
 from typing import List, Dict, Any
 from qdrant_client import QdrantClient, models
 from qdrant_client.http.models import NamedVector, NamedSparseVector, SparseVector
@@ -12,9 +15,21 @@ class CodeRetriever:
             api_key=os.getenv("QDRANT_API_KEY"),
         )
         self.embedder = embedder
-        self.reranker = CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2")
-        self.sparse_model = SparseTextEmbedding(model_name="Qdrant/bm25")
+        self._reranker = None
+        self._sparse_model = None
         self.collection_name = "code_sage"
+
+    @property
+    def reranker(self):
+        if self._reranker is None:
+            self._reranker = CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2")
+        return self._reranker
+
+    @property
+    def sparse_model(self):
+        if self._sparse_model is None:
+            self._sparse_model = SparseTextEmbedding(model_name="Qdrant/bm25")
+        return self._sparse_model
 
     def hybrid_search(self, query: str, repo_url: str, limit: int = 3) -> List[Dict[str, Any]]:
         # Dense vector

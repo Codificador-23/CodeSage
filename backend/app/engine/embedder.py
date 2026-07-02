@@ -1,11 +1,22 @@
+import os
+os.environ["CUDA_VISIBLE_DEVICES"] = ""
+os.environ["OMP_NUM_THREADS"] = "1"
+
 from typing import List, Tuple
 from sentence_transformers import SentenceTransformer
 import torch
 
 class CodeEmbedder:
     def __init__(self, model_name: str = "sentence-transformers/all-MiniLM-L6-v2"):
-        self.device = "cuda" if torch.cuda.is_available() else "cpu"
-        self.model = SentenceTransformer(model_name, device=self.device)
+        self.model_name = model_name
+        self._model = None
+
+    @property
+    def model(self):
+        if self._model is None:
+            device = "cuda" if torch.cuda.is_available() else "cpu"
+            self._model = SentenceTransformer(self.model_name, device=device)
+        return self._model
 
     def embed_all(self, chunks: List[dict]) -> List[Tuple[dict, List[float]]]:
         """
@@ -21,5 +32,3 @@ class CodeEmbedder:
     def embed_chunks(self, texts: List[str]) -> List[List[float]]:
         embeddings = self.model.encode(texts, batch_size=32, show_progress_bar=False)
         return embeddings.tolist()
-
-        

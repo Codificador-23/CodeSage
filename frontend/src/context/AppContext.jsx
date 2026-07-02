@@ -1,4 +1,5 @@
 import React, { createContext, useState, useEffect, useContext } from 'react'
+import { API_BASE_URL } from '../config'
 
 const AppContext = createContext()
 
@@ -58,7 +59,7 @@ export const AppProvider = ({ children }) => {
     useEffect(() => {
         const fetchRepos = async () => {
             try {
-                const res = await fetch('/api/repos')
+                const res = await fetch(`${API_BASE_URL}/api/repos`)
                 if (res.ok) {
                     const data = await res.json()
                     const urls = data.map(r => r.repo_url)
@@ -92,7 +93,7 @@ export const AppProvider = ({ children }) => {
         setProgress(0)
 
         try {
-            const response = await fetch('/api/ingest/', {
+            const response = await fetch(`${API_BASE_URL}/api/ingest/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -110,7 +111,7 @@ export const AppProvider = ({ children }) => {
 
             const pollInterval = setInterval(async () => {
                 try {
-                    const statusRes = await fetch(`/api/ingest/status/${repoUrl}`)
+                    const statusRes = await fetch(`${API_BASE_URL}/api/ingest/status/${repoUrl}`)
                     if (!statusRes.ok) {
                         throw new Error("Could not fetch trace status.")
                     }
@@ -169,7 +170,7 @@ export const AppProvider = ({ children }) => {
         setProgress(0)
 
         try {
-            const checkRes = await fetch('/api/repos')
+            const checkRes = await fetch(`${API_BASE_URL}/api/repos`)
             if (checkRes.ok) {
                 const reposData = await checkRes.json()
                 const exists = reposData.some(r => r.repo_url === repoUrl)
@@ -239,7 +240,7 @@ export const AppProvider = ({ children }) => {
         }))
 
         try {
-            const response = await fetch('/api/chat/stream', {
+            const response = await fetch(`${API_BASE_URL}/api/chat/stream`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -365,7 +366,7 @@ export const AppProvider = ({ children }) => {
 
     const deleteRepo = async (repoUrl) => {
         try {
-            const res = await fetch(`/api/repos/${encodeURIComponent(repoUrl)}`, {
+            const res = await fetch(`${API_BASE_URL}/api/repos/${encodeURIComponent(repoUrl)}`, {
                 method: 'DELETE'
             })
             if (res.ok) {
@@ -395,7 +396,7 @@ export const AppProvider = ({ children }) => {
 
     const clearAllData = async () => {
         try {
-            const res = await fetch('/api/repos/all', {
+            const res = await fetch(`${API_BASE_URL}/api/repos/all`, {
                 method: 'DELETE'
             })
             if (res.ok) {
