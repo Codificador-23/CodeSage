@@ -6,7 +6,10 @@ import PageGlow from '../components/PageGlow'
 
 const AppPage = () => {
     const { activeRepo, repos } = useApp()
-    const { a: colorA, b: colorB } = getRepoColors(activeRepo)
+    
+    const { a: colorA, b: colorB } = activeRepo
+        ? getRepoColors(activeRepo)
+        : { a: '#3b82f6', b: '#2563eb' }
 
     const getRepoName = (url) => {
         if (!url) return ""
@@ -19,10 +22,13 @@ const AppPage = () => {
         }
     }
 
-    const repoName = activeRepo ? getRepoName(activeRepo) : "Workspace"
+    const repoName = activeRepo ? getRepoName(activeRepo) : "Get Started"
     const activeRepoMeta = repos.find(r => r.repo_url === activeRepo)
     const chunkCount = activeRepoMeta?.chunk_count
-    const subtitle = chunkCount !== undefined ? `${chunkCount} chunks indexed · ready` : undefined
+    
+    const subtitle = activeRepo
+        ? (chunkCount !== undefined ? `${chunkCount} chunks indexed · ready` : undefined)
+        : "Index a GitHub repository to begin exploring your codebase"
 
     return (
         <div style={{ width: '100%', background: '#0a0a0d', display: 'flex', flexDirection: 'column' }}>

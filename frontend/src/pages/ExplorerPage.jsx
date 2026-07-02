@@ -170,17 +170,20 @@ const ExplorerPage = () => {
 
     if (repos.length === 0) {
         return (
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px', backgroundColor: '#0d1117', height: '100vh' }}>
-                <div style={{ fontSize: '32px', marginBottom: '16px' }}>📂</div>
-                <h3 style={{ fontSize: '18px', fontWeight: 600, marginBottom: '8px' }}>No Workspace Loaded</h3>
-                <p style={{ color: 'var(--text-muted)', fontSize: '13px', marginBottom: '20px', maxWidth: '300px', textAlign: 'center' }}>
-                    Please index a GitHub repository first to query its abstract chunks.
-                </p>
-                <Link to="/app" className="btn-primary" style={{ width: 'auto', padding: '10px 16px', display: 'inline-flex', alignItems: 'center', gap: '8px', textDecoration: 'none' }}>
-                    <span>Launch Workspace</span>
-                    <ArrowRight size={14} />
-                </Link>
-            </div>
+            <PageGlow
+                colorA="#3b82f6"
+                colorB="#2563eb"
+                eyebrow="AST Chunk Explorer"
+                title="No Workspace Loaded"
+                subtitle="Please index a GitHub repository first to query its abstract chunks"
+            >
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '60px 40px' }}>
+                    <Link to="/app" className="btn-primary" style={{ width: 'auto', padding: '10px 16px', display: 'inline-flex', alignItems: 'center', gap: '8px', textDecoration: 'none' }}>
+                        <span>Launch Workspace</span>
+                        <ArrowRight size={14} />
+                    </Link>
+                </div>
+            </PageGlow>
         )
     }
 

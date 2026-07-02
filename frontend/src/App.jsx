@@ -27,11 +27,8 @@ function App() {
     // Determine current view
     if (showFullInput && repos.length === 0) {
         return (
-            <div className="fullscreen-ingest">
-                <div className="fullscreen-box">
-                    <div className="fullscreen-title">
-                        <span>CodeSage</span>
-                    </div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '60px 40px', minHeight: '100%', width: '100%' }}>
+                <div className="fullscreen-box" style={{ width: '100%', maxWidth: '520px' }}>
                     <RepoInput
                         onIngest={handleIngest}
                         isIngesting={isIngesting}
@@ -58,7 +55,7 @@ function App() {
             />
             <div className="chat-workspace">
                 {showFullInput ? (
-                    <div style={{ padding: '40px', maxWidth: '600px', margin: 'auto', width: '100%' }}>
+                     <div style={{ padding: '40px', maxWidth: '600px', margin: 'auto', width: '100%' }}>
                         <h2 style={{ marginBottom: '20px', color: '#fff' }}>Index New Repository</h2>
                         <RepoInput
                             onIngest={handleIngest}

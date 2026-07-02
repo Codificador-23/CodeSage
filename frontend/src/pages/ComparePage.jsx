@@ -144,17 +144,39 @@ const ComparePage = () => {
 
     if (repos.length === 0) {
         return (
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px', backgroundColor: '#0d1117', height: '100vh' }}>
-                <div style={{ fontSize: '32px', marginBottom: '16px' }}>📂</div>
-                <h3 style={{ fontSize: '18px', fontWeight: 600, marginBottom: '8px' }}>No Workspace Loaded</h3>
-                <p style={{ color: 'var(--text-muted)', fontSize: '13px', marginBottom: '20px', maxWidth: '300px', textAlign: 'center' }}>
-                    Please index at least one GitHub repository to use dual repository comparison.
-                </p>
-                <Link to="/app" className="btn-primary" style={{ width: 'auto', padding: '10px 16px', display: 'inline-flex', alignItems: 'center', gap: '8px', textDecoration: 'none' }}>
-                    <span>Launch Workspace</span>
-                    <ArrowRight size={14} />
-                </Link>
-            </div>
+            <PageGlow
+                colorA="#22c55e"
+                colorB="#16a34a"
+                eyebrow="Comparison Workspace"
+                title="No Workspace Loaded"
+                subtitle="Index at least two GitHub repositories to use dual repository comparison."
+            >
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '60px 40px' }}>
+                    <Link to="/app" className="btn-primary" style={{ width: 'auto', padding: '10px 16px', display: 'inline-flex', alignItems: 'center', gap: '8px', textDecoration: 'none' }}>
+                        <span>Launch Workspace</span>
+                        <ArrowRight size={14} />
+                    </Link>
+                </div>
+            </PageGlow>
+        )
+    }
+
+    if (repos.length === 1) {
+        return (
+            <PageGlow
+                colorA="#22c55e"
+                colorB="#16a34a"
+                eyebrow="Comparison Workspace"
+                title="Only One Workspace Loaded"
+                subtitle={`You have "${repos[0].repo_name}" indexed. Index at least one more repository to use dual repository comparison.`}
+            >
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '60px 40px' }}>
+                    <Link to="/app" className="btn-primary" style={{ width: 'auto', padding: '10px 16px', display: 'inline-flex', alignItems: 'center', gap: '8px', textDecoration: 'none' }}>
+                        <span>Index Another Repository</span>
+                        <ArrowRight size={14} />
+                    </Link>
+                </div>
+            </PageGlow>
         )
     }
 
