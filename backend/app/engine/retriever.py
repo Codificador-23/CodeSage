@@ -31,7 +31,7 @@ class CodeRetriever:
             self._sparse_model = SparseTextEmbedding(model_name="Qdrant/bm25")
         return self._sparse_model
 
-    def hybrid_search(self, query: str, repo_url: str, limit: int = 3) -> List[Dict[str, Any]]:
+    def hybrid_search(self, query: str, repo_url: str, limit: int = 5) -> List[Dict[str, Any]]:
         # Dense vector
         dense_vector = self.embedder.embed_query(query)
 
