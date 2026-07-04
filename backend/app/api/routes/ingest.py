@@ -65,11 +65,30 @@ async def process_ingestion(repo_url: str):
             "progress": 50,
             "message": f"Embedding {len(chunks)} chunks using SentenceTransformers..."
         }
-        contents = [chunk["content"] for chunk in chunks]
-        dense_embeddings = embedder.embed_chunks(contents)
+        import gc
 
-        # 4. Embed — sparse
-        sparse_embeddings = list(sparse_model.embed(contents))
+        contents = [chunk["content"] for chunk in chunks]
+        BATCH_THRESHOLD = 300
+        BATCH_SIZE = 25
+
+        if len(contents) > BATCH_THRESHOLD:
+            print(f"Large repo detected ({len(contents)} chunks) — using batched embedding for memory safety")
+            dense_embeddings = []
+            for i in range(0, len(contents), BATCH_SIZE):
+                batch = contents[i:i + BATCH_SIZE]
+                batch_embeddings = embedder.embed_chunks(batch)
+                dense_embeddings.extend(batch_embeddings)
+                gc.collect()
+
+            sparse_embeddings = []
+            for i in range(0, len(contents), BATCH_SIZE):
+                batch = contents[i:i + BATCH_SIZE]
+                batch_sparse = list(sparse_model.embed(batch))
+                sparse_embeddings.extend(batch_sparse)
+                gc.collect()
+        else:
+            dense_embeddings = embedder.embed_chunks(contents)
+            sparse_embeddings = list(sparse_model.embed(contents))
 
         # 5. Build Qdrant points
         points = []
