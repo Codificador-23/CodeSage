@@ -1,7 +1,3 @@
-import os
-os.environ["CUDA_VISIBLE_DEVICES"] = ""
-os.environ["OMP_NUM_THREADS"] = "1"
-
 from typing import List, Tuple
 from sentence_transformers import SentenceTransformer
 import torch

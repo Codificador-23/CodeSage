@@ -1,7 +1,4 @@
 import os
-os.environ["CUDA_VISIBLE_DEVICES"] = ""
-os.environ["OMP_NUM_THREADS"] = "1"
-
 from typing import List, Dict, Any
 from qdrant_client import QdrantClient, models
 from qdrant_client.http.models import NamedVector, NamedSparseVector, SparseVector
@@ -32,10 +29,8 @@ class CodeRetriever:
         return self._sparse_model
 
     def hybrid_search(self, query: str, repo_url: str, limit: int = 5) -> List[Dict[str, Any]]:
-        # Dense vector
         dense_vector = self.embedder.embed_query(query)
 
-        # Sparse BM25 vector
         sparse_result = list(self.sparse_model.embed([query]))[0]
         sparse_vector = SparseVector(
             indices=sparse_result.indices.tolist(),
@@ -49,7 +44,6 @@ class CodeRetriever:
             )]
         )
 
-        # Dense search
         dense_hits = self.qdrant.query_points(
             collection_name=self.collection_name,
             query=dense_vector,
@@ -59,7 +53,6 @@ class CodeRetriever:
             with_payload=True
         ).points
 
-        # Sparse search
         sparse_hits = self.qdrant.query_points(
             collection_name=self.collection_name,
             query=sparse_vector,
@@ -69,13 +62,30 @@ class CodeRetriever:
             with_payload=True
         ).points
 
-        # RRF merge
+        query_lower = query.lower()
+
+        def matches_filename(hit):
+            fp = (hit.payload.get('file_path') or '').lower()
+            fname = fp.split('\\')[-1].split('/')[-1]
+            return fname in query_lower
+
+        # Check if any chunk's filename is directly named in the query
+        filename_match_hit = None
+        for h in dense_hits:
+            if matches_filename(h):
+                filename_match_hit = h
+                break
+        if filename_match_hit is None:
+            for h in sparse_hits:
+                if matches_filename(h):
+                    filename_match_hit = h
+                    break
+
         merged = self._rrf_merge(dense_hits, sparse_hits)
 
         if not merged:
             return []
 
-        # Rerank
         pairs = [[query, hit["content"]] for hit in merged]
         scores = self.reranker.predict(pairs)
 
@@ -83,6 +93,23 @@ class CodeRetriever:
             hit["rerank_score"] = float(scores[i])
 
         merged = sorted(merged, key=lambda x: x["rerank_score"], reverse=True)
+
+        # If the user explicitly named a file in their query, force it to the top
+        # of the final results regardless of embedding/reranker scoring, since
+        # exact filename mentions are a strong deterministic signal.
+        if filename_match_hit is not None:
+            fp = filename_match_hit.payload.get('file_path')
+            already_included = any(m['file_path'] == fp for m in merged[:limit])
+            if not already_included:
+                forced_entry = {
+                    "content": filename_match_hit.payload.get("content"),
+                    "file_path": filename_match_hit.payload.get("file_path"),
+                    "start_line": filename_match_hit.payload.get("start_line"),
+                    "end_line": filename_match_hit.payload.get("end_line"),
+                    "chunk_type": filename_match_hit.payload.get("chunk_type"),
+                    "score": 1.0
+                }
+                merged = [forced_entry] + [m for m in merged if m['file_path'] != fp]
 
         return merged[:limit]
 
