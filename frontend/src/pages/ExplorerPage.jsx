@@ -4,7 +4,10 @@ import { Link } from 'react-router-dom'
 import { Search, Loader2, ArrowRight, CornerDownRight } from 'lucide-react'
 import PageGlow from '../components/PageGlow'
 
+import { useApp } from '../context/AppContext'
+
 const ExplorerPage = () => {
+    const { statsVersion } = useApp()
     const [repos, setRepos] = useState([])
     const [selectedRepo, setSelectedRepo] = useState(null)
 
@@ -46,7 +49,7 @@ const ExplorerPage = () => {
             }
         }
         fetchRepos()
-    }, [])
+    }, [statsVersion])
 
     // Load chunks when active repo changes
     useEffect(() => {

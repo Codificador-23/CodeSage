@@ -5,7 +5,7 @@ import { Trash2, AlertOctagon, Loader2, Copy, RefreshCw, Check } from 'lucide-re
 import PageGlow from '../components/PageGlow'
 
 const SettingsPage = () => {
-    const { deleteRepo, clearAllData } = useApp()
+    const { deleteRepo, clearAllData, statsVersion } = useApp()
     const [reposMetadata, setReposMetadata] = useState([])
     const [stats, setStats] = useState(null)
     const [chunkBreakdowns, setChunkBreakdowns] = useState({}) // repoUrl -> breakdown
@@ -71,7 +71,7 @@ const SettingsPage = () => {
             setErrorStr(err.message)
             setLoading(false)
         })
-    }, [refreshTrigger])
+    }, [refreshTrigger, statsVersion])
 
     const handleDelete = async (url) => {
         if (!window.confirm("Purging this workspace will remove all code token indices from Qdrant and PostgreSQL metadata database logs. Are you sure?")) {

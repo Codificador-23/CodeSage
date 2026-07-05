@@ -5,7 +5,10 @@ import { ArrowRight, Github, Code, RefreshCw, Eye, Sparkles, Database } from 'lu
 import PageGlow from '../components/PageGlow'
 import Logo from '../components/Logo'
 
+import { useApp } from '../context/AppContext'
+
 const LandingPage = () => {
+    const { statsVersion } = useApp()
     const [vectorCount, setVectorCount] = useState(null)
     const [liveStats, setLiveStats] = useState({ repos: 0, vectors: 0, languages: 0 })
     const themeColor = '#ef4444'
@@ -22,7 +25,7 @@ const LandingPage = () => {
             })
             setVectorCount(stats.total_vectors)
         }).catch(() => { })
-    }, [])
+    }, [statsVersion])
 
     return (
         <PageGlow colorA={themeColor} colorB="#f43f5e">

@@ -5,6 +5,7 @@ const AppContext = createContext()
 
 export const AppProvider = ({ children }) => {
     const [repos, setRepos] = useState([]) // list of repo URLs
+    const [statsVersion, setStatsVersion] = useState(0)
     const [activeRepo, setActiveRepo] = useState(null) // active repo URL
     const [isIngesting, setIsIngesting] = useState(false)
     const [ingestStatus, setIngestStatus] = useState("")
@@ -144,6 +145,7 @@ export const AppProvider = ({ children }) => {
                         setShowFullInput(false)
                         setIsIngesting(false)
                         setIngestStatus("")
+                        setStatsVersion(v => v + 1)
                     } else if (data.status === "error") {
                         clearInterval(pollInterval)
                         throw new Error(data.message || "Extraction process failed.")
@@ -385,6 +387,7 @@ export const AppProvider = ({ children }) => {
                     setActiveRepo(null)
                     setShowFullInput(true)
                 }
+                setStatsVersion(v => v + 1)
                 return true
             }
             return false
@@ -405,6 +408,7 @@ export const AppProvider = ({ children }) => {
                 setChatArchive({})
                 setActiveChatSession({})
                 setShowFullInput(true)
+                setStatsVersion(v => v + 1)
                 return true
             }
             return false
@@ -428,12 +432,18 @@ export const AppProvider = ({ children }) => {
             delete updated[repoUrl]
             return updated
         })
+        setActiveChatSession(prev => {
+            const updated = { ...prev }
+            delete updated[repoUrl]
+            return updated
+        })
     }
 
     return (
         <AppContext.Provider value={{
             repos,
             setRepos,
+            statsVersion,
             activeRepo,
             setActiveRepo,
             chatHistories: chatArchive,

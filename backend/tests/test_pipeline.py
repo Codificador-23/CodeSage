@@ -6,6 +6,7 @@ from ragas import evaluate
 from ragas.metrics import faithfulness, answer_relevancy, context_precision
 from ragas.llms import LangchainLLMWrapper
 from ragas.embeddings import LangchainEmbeddingsWrapper
+from ragas.run_config import RunConfig
 from langchain_groq import ChatGroq
 from langchain_huggingface import HuggingFaceEmbeddings
 from datasets import Dataset
@@ -37,7 +38,7 @@ def setup_evaluation_data():
     Ensures the SQLModel repository is ingested.
     Pipes the 5 questions through the live chat endpoint and extracts real answers and reasoning traces.
     """
-    backend_url = "http://localhost:8000"
+    backend_url = "https://codificador-23-codesage-backend.hf.space"
     repo_url = "https://github.com/tiangolo/sqlmodel"
 
     # 1. Ping /health or /api/health to ensure the backend is running
@@ -161,11 +162,13 @@ def test_rag_pipeline_ragas_scores():
     ))
 
     print("Running RAGAS evaluation with Groq judge...")
+
     results = evaluate(
         dataset,
         metrics=[faithfulness, answer_relevancy, context_precision],
         llm=judge_llm,
         embeddings=judge_embeddings,
+        run_config=RunConfig(timeout=180, max_retries=3),
     )
 
     scores = results.to_pandas()
