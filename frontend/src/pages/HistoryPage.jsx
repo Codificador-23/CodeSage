@@ -24,7 +24,7 @@ const getDateLabel = (dateKey) => {
 }
 
 const HistoryPage = () => {
-    const { chatArchive, clearArchivedChat, setActiveRepo, setShowFullInput } = useApp()
+    const { chatArchive, clearArchivedChat, setActiveRepo, setShowFullInput, restoreArchivedChat } = useApp()
     const navigate = useNavigate()
     const [search, setSearch] = useState("")
 
@@ -55,6 +55,7 @@ const HistoryPage = () => {
     }
 
     const handleFollowUp = (repoUrl) => {
+        restoreArchivedChat(repoUrl)
         setActiveRepo(repoUrl)
         setShowFullInput(false)
         navigate('/app')

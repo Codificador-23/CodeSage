@@ -178,7 +178,10 @@ const SettingsPage = () => {
     const getRelativeTime = (isoString) => {
         if (!isoString) return 'N/A'
         try {
-            const date = new Date(isoString)
+            const normalizedString = isoString.endsWith('Z') || isoString.includes('+')
+                ? isoString
+                : isoString + 'Z'
+            const date = new Date(normalizedString)
             const now = new Date()
             const diffMs = now - date
             const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))

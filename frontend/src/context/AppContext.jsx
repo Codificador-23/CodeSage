@@ -439,6 +439,13 @@ export const AppProvider = ({ children }) => {
         })
     }
 
+    const restoreArchivedChat = (repoUrl) => {
+        setActiveChatSession(prev => ({
+            ...prev,
+            [repoUrl]: chatArchive[repoUrl] || []
+        }))
+    }
+
     return (
         <AppContext.Provider value={{
             repos,
@@ -462,6 +469,7 @@ export const AppProvider = ({ children }) => {
             clearAllData,
             clearActiveChat,
             clearArchivedChat,
+            restoreArchivedChat,
             progress,
             alreadyIndexed,
             setAlreadyIndexed,
