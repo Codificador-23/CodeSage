@@ -11,8 +11,19 @@ from langchain_groq import ChatGroq
 from langchain_huggingface import HuggingFaceEmbeddings
 from datasets import Dataset
 from dotenv import load_dotenv
+import langchain_groq.chat_models as groq_chat_models
 
 load_dotenv()
+
+# Patch ChatGroq._generate to strip out 'n' parameter for Groq compatibility
+_original_generate = groq_chat_models.ChatGroq._generate
+
+def _patched_generate(self, messages, stop=None, run_manager=None, **kwargs):
+    kwargs.pop('n', None)
+    return _original_generate(self, messages, stop=stop, run_manager=run_manager, **kwargs)
+
+groq_chat_models.ChatGroq._generate = _patched_generate
+
 
 # The 5 questions to ask and evaluate
 QUESTIONS = [
@@ -168,7 +179,7 @@ def test_rag_pipeline_ragas_scores():
         metrics=[faithfulness, answer_relevancy, context_precision],
         llm=judge_llm,
         embeddings=judge_embeddings,
-        run_config=RunConfig(timeout=180, max_retries=3),
+        run_config=RunConfig(timeout=180, max_retries=5, max_workers=2),
     )
 
     scores = results.to_pandas()
