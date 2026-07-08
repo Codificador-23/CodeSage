@@ -15,15 +15,20 @@ import langchain_groq.chat_models as groq_chat_models
 
 load_dotenv()
 
-# Patch ChatGroq._generate to strip out 'n' parameter for Groq compatibility
+# Patch both sync and async ChatGroq generate methods to strip 'n' for Groq compatibility
 _original_generate = groq_chat_models.ChatGroq._generate
+_original_agenerate = groq_chat_models.ChatGroq._agenerate
 
 def _patched_generate(self, messages, stop=None, run_manager=None, **kwargs):
     kwargs.pop('n', None)
     return _original_generate(self, messages, stop=stop, run_manager=run_manager, **kwargs)
 
-groq_chat_models.ChatGroq._generate = _patched_generate
+async def _patched_agenerate(self, messages, stop=None, run_manager=None, **kwargs):
+    kwargs.pop('n', None)
+    return await _original_agenerate(self, messages, stop=stop, run_manager=run_manager, **kwargs)
 
+groq_chat_models.ChatGroq._generate = _patched_generate
+groq_chat_models.ChatGroq._agenerate = _patched_agenerate
 
 # The 5 questions to ask and evaluate
 QUESTIONS = [

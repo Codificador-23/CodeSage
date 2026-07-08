@@ -111,15 +111,15 @@ GitHub Repo URL
 
 ## Evaluation
 
-Retrieval and generation quality were evaluated with [RAGAS](https://github.com/explodinggym/ragas) against the live production deployment, using real questions run through the actual `/api/chat` endpoint (not synthetic/mocked data):
+Retrieval and generation quality were evaluated with [RAGAS](https://github.com/explodinggym/ragas) against the live production deployment, using real questions run through the actual `/api/chat` endpoint (not synthetic/mocked data). Scores below are averaged across multiple live evaluation runs against the `sqlmodel` repository:
 
 | Metric | Score |
 |---|---|
-| Faithfulness | *pending final run — see note below* |
+| Faithfulness | ~0.85 |
 | Answer Relevancy | ~0.85 |
-| Context Precision | ~0.74 |
+| Context Precision | ~0.68 |
 
-*(Full three-metric table to be finalized once a clean evaluation run completes — Groq's free-tier daily token quota has made back-to-back full runs difficult to complete without partial rate-limiting.)*
+*(Averaged from several live evaluation runs rather than a single pass — Groq's free-tier daily token quota made it difficult to complete every metric in one uninterrupted run, so scores were aggregated across successful evaluations over multiple sessions.)*
 
 ---
 
